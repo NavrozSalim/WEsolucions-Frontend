@@ -4,8 +4,16 @@ import { defineConfig } from "vite"
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  plugins: [react(), VitePWA()],
-  base: '/static/',   // ✅ tells Vite to serve assets under /static/
+  plugins: [
+    react(), 
+    VitePWA({
+      registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+      }
+    })
+  ],
+  base: '/',   // Use root path for Vercel deployment
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
