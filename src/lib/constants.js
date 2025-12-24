@@ -23,9 +23,9 @@ const getApiBaseUrl = () => {
   console.error('Current hostname:', window.location.hostname);
   console.error('To fix: Go to Vercel → Settings → Environment Variables → Add VITE_API_BASE_URL');
   
-  // Don't use relative path - it will fail. Show error to user instead.
-  // Return empty string to force errors that are easier to debug
-  return "";
+  // Use relative path as fallback (will show clear error when it fails)
+  // This allows the app to load, but API calls will show helpful errors
+  return "/api";
 };
 
 export const API_BASE_URL = getApiBaseUrl();
