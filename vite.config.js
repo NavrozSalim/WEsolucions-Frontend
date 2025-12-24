@@ -8,8 +8,26 @@ export default defineConfig({
     react(), 
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['favicon.png'],
+      manifest: {
+        name: 'WEsolucions',
+        short_name: 'WEsolucions',
+        description: 'Dropshipping Management Platform',
+        theme_color: '#0071ce',
+        icons: [
+          {
+            src: 'favicon.png',
+            sizes: '192x192',
+            type: 'image/png'
+          }
+        ]
+      },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        runtimeCaching: []
+      },
+      devOptions: {
+        enabled: false
       }
     })
   ],
