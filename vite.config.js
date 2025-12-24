@@ -37,7 +37,7 @@ const plugins = [react()]
 
 export default defineConfig({
   plugins,
-  base: '/static/',   // Use /static/ for Django integration or / for Vercel standalone
+  base: '/',   // Use / for Vercel standalone deployment
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
