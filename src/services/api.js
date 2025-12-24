@@ -19,17 +19,41 @@ const apiCall = async (endpoint, options = {}) => {
   };
 
   try {
+    // Check if API_BASE_URL is configured
+    if (!API_BASE_URL) {
+      throw new Error('API_BASE_URL is not configured. Please set VITE_API_BASE_URL in Vercel environment variables.');
+    }
+    
     const response = await fetch(url, { ...defaultOptions, ...options });
+    
+    // Check if response is HTML (usually means 404 or wrong URL)
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('text/html')) {
+      throw new Error(`API endpoint returned HTML instead of JSON. Check that VITE_API_BASE_URL is set correctly. Current URL: ${url}`);
+    }
+    
     if (!response.ok) {
       // Try to parse error message if possible
       let message = `API call failed: ${response.status} ${response.statusText}`;
-      try { const data = await response.json(); if (data && (data.error || data.message)) { message = data.error || data.message; } } catch (_) {}
+      try { 
+        const data = await response.json(); 
+        if (data && (data.error || data.message)) { 
+          message = data.error || data.message; 
+        } 
+      } catch (_) {
+        // If response is HTML, provide helpful error
+        if (contentType && contentType.includes('text/html')) {
+          message = `API endpoint not found or VITE_API_BASE_URL is incorrect. Check Vercel environment variables.`;
+        }
+      }
       throw new Error(message);
     }
     // Some upload endpoints may return JSON; assume JSON here
     return await response.json();
   } catch (error) {
     console.error('API call error:', error);
+    console.error('API URL attempted:', url);
+    console.error('API_BASE_URL:', API_BASE_URL);
     throw error;
   }
 };

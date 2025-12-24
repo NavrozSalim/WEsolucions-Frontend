@@ -18,11 +18,14 @@ const getApiBaseUrl = () => {
   }
   
   // In production without VITE_API_BASE_URL, show error
-  console.error('VITE_API_BASE_URL is not set! Please set it in Vercel environment variables.');
+  const errorMsg = 'VITE_API_BASE_URL is not set! Please set it in Vercel environment variables.';
+  console.error(errorMsg);
   console.error('Current hostname:', window.location.hostname);
+  console.error('To fix: Go to Vercel → Settings → Environment Variables → Add VITE_API_BASE_URL');
   
-  // Fallback: Try to use relative path (won't work if backend is on different domain)
-  return "/api";
+  // Don't use relative path - it will fail. Show error to user instead.
+  // Return empty string to force errors that are easier to debug
+  return "";
 };
 
 export const API_BASE_URL = getApiBaseUrl();
