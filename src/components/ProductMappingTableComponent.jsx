@@ -392,7 +392,20 @@ const ProductMappingTable = () => {
 
   const fetchUploads = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/products/uploads/?page=${currentPage}&page_size=${pageSize}`)
+      const url = `${API_BASE_URL}/products/uploads/?page=${currentPage}&page_size=${pageSize}`
+      console.log('Fetching uploads from:', url)
+      console.log('API_BASE_URL:', API_BASE_URL)
+      
+      const response = await fetch(url)
+      
+      // Check if response is HTML (404 page)
+      const contentType = response.headers.get('content-type')
+      if (contentType && contentType.includes('text/html')) {
+        const errorMsg = `API returned HTML instead of JSON. Check that the backend endpoint exists and VITE_API_BASE_URL is correct. URL: ${url}`
+        console.error(errorMsg)
+        setError(errorMsg)
+        return
+      }
       
       if (!response.ok) {
         // If response is not ok, try to get error message from response
@@ -446,7 +459,17 @@ const ProductMappingTable = () => {
       }
     } catch (error) {
       console.error('Error fetching uploads:', error)
-      setError(`Failed to fetch upload history: ${error.message || 'Network error. Please check your connection.'}`)
+      console.error('API_BASE_URL:', API_BASE_URL)
+      console.error('Full URL attempted:', `${API_BASE_URL}/products/uploads/?page=${currentPage}&page_size=${pageSize}`)
+      
+      let errorMessage = `Failed to fetch upload history: ${error.message || 'Network error. Please check your connection.'}`
+      
+      // Provide helpful error message if API_BASE_URL is not set
+      if (!API_BASE_URL || API_BASE_URL === '/api') {
+        errorMessage = 'API URL not configured. Please set VITE_API_BASE_URL in Vercel environment variables and redeploy.'
+      }
+      
+      setError(errorMessage)
       setUploads([])
       setPagination({
         current_page: 1,
