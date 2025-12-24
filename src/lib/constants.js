@@ -31,5 +31,27 @@ const getApiBaseUrl = () => {
 export const API_BASE_URL = getApiBaseUrl();
 
 // Log the API base URL for debugging
+console.log('=== API CONFIGURATION DEBUG ===');
 console.log('API_BASE_URL configured as:', API_BASE_URL);
+console.log('VITE_API_BASE_URL env var:', import.meta.env.VITE_API_BASE_URL);
+console.log('Is DEV:', IS_DEV);
+if (typeof window !== 'undefined') {
+  console.log('Hostname:', window.location.hostname);
+  console.log('Full URL:', window.location.href);
+}
+console.log('All env vars:', Object.keys(import.meta.env).filter(k => k.startsWith('VITE_')));
+console.log('==============================');
+
+// Test backend connection on load (if in browser)
+if (typeof window !== 'undefined' && API_BASE_URL && API_BASE_URL !== '/api') {
+  const healthUrl = `${API_BASE_URL.replace(/\/$/, '')}/health`.replace(/\/\/health/, '/health');
+  console.log('Testing backend health at:', healthUrl);
+  fetch(healthUrl)
+    .then(res => {
+      console.log('Health check response status:', res.status);
+      return res.json();
+    })
+    .then(data => console.log('✅ Backend health check SUCCESS:', data))
+    .catch(err => console.error('❌ Backend health check FAILED:', err));
+}
 
